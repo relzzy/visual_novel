@@ -1,0 +1,185 @@
+{
+  "intro": {
+    "backgroundImage": "/assets/backgrounds/ceiling.png",
+    "charactersOnScreen": [
+      {
+        "name": "Akihito",
+        "spriteUrl": "/assets/characters/mc_sleepwear.png",
+        "position": "left"
+      }
+    ],
+    "nextSceneId": "wash_face",
+    "sequence": [
+      {
+        "speaker": "Akihito",
+        "text": "It's happening again..."
+      },
+      {
+        "speaker": "Akihito",
+        "text": "I can't sleep at all."
+      },
+      {
+        "speaker": "Akihito",
+        "text": "How many days has it been? Three? Four?"
+      },
+      {
+        "speaker": "Akihito",
+        "text": "My body feels completely exhausted, yet my mind refuses to shut down."
+      },
+      {
+        "speaker": "Akihito",
+        "text": "Staring at this moldy ceiling in my cramped apartment isn't going to help me fall back asleep."
+      }
+    ]
+  },
+  "wash_face": {
+    "backgroundImage": "/assets/backgrounds/mirror_scene.png",
+    "choices": [
+      {
+        "text": "Cook a simple meal",
+        "nextSceneId": "morning_routine",
+        "timePassed": 30,
+        "mcStatChange": {
+          "energy": 20,
+          "cleanliness": -5
+        }
+      },
+      {
+        "text": "Order breakfast delivery",
+        "nextSceneId": "morning_routine",
+        "timePassed": 10,
+        "moneyCost": 800,
+        "mcStatChange": {
+          "energy": 30
+        }
+      }
+    ],
+    "sequence": [
+      {
+        "speaker": "Akihito",
+        "text": "Cold water. That's what I need."
+      },
+      {
+        "speaker": "Akihito",
+        "text": "God, I look terrible. The bags under my eyes are practically bruising."
+      },
+      {
+        "speaker": "Akihito",
+        "text": "It's barely 5 AM. I should probably get something to eat before getting ready for Kousei University."
+      }
+    ]
+  },
+  "morning_routine": {
+    "backgroundImage": "/assets/backgrounds/bedroom.png",
+    "charactersOnScreen": [
+      {
+        "name": "Akihito",
+        "spriteUrl": "/assets/characters/mc_sleepwear.png",
+        "position": "left"
+      }
+    ],
+    "choices": [
+      {
+        "text": "Walk to university",
+        "nextSceneId": "walk_to_school",
+        "timePassed": 45,
+        "mcStatChange": {
+          "energy": -15,
+          "cleanliness": -10
+        },
+        "requiresTimeMin": 420,
+        "requiresTimeMax": 480
+      },
+      {
+        "text": "Take the train",
+        "nextSceneId": "take_metro",
+        "timePassed": 20,
+        "moneyCost": 300,
+        "mcStatChange": {
+          "cleanliness": -5
+        },
+        "requiresTimeMin": 420
+      }
+    ],
+    "sequence": [
+      {
+        "speaker": "Akihito",
+        "text": "Well, that hits the spot. My stomach has stopped complaining at least."
+      },
+      {
+        "speaker": "Akihito",
+        "text": "Time to get dressed. If I leave now, I can beat the morning rush hour."
+      },
+      {
+        "speaker": "Akihito",
+        "text": "How should I get to campus today?"
+      }
+    ]
+  },
+  "walk_to_school": {
+    "backgroundImage": "/assets/backgrounds/walk.png",
+    "charactersOnScreen": [
+      {
+        "name": "Akihito",
+        "spriteUrl": "/assets/characters/mc_school_uniform-removebg-preview.png",
+        "position": "left"
+      }
+    ],
+    "nextSceneId": "classroom",
+    "sequence": [
+      {
+        "speaker": "Akihito",
+        "text": "Morning walks are so refreshing..."
+      },
+      {
+        "speaker": "Akihito",
+        "text": "Though it's exhausting with how little sleep I've had."
+      }
+    ]
+  },
+  "take_metro": {
+    "backgroundImage": "/assets/backgrounds/metro.png",
+    "charactersOnScreen": [
+      {
+        "name": "Akihito",
+        "spriteUrl": "/assets/characters/mc_school_uniform-removebg-preview.png",
+        "position": "left"
+      }
+    ],
+    "nextSceneId": "classroom",
+    "sequence": [
+      {
+        "speaker": "Akihito",
+        "text": "The metro isn't too crowded this early in the morning."
+      },
+      {
+        "speaker": "Akihito",
+        "text": "I can actually get a seat for once."
+      }
+    ]
+  },
+  "classroom": {
+    "backgroundImage": "/assets/backgrounds/classroom.png",
+    "charactersOnScreen": [
+      {
+        "name": "Akihito",
+        "spriteUrl": "/assets/characters/mc_school_uniform-removebg-preview.png",
+        "position": "left"
+      }
+    ],
+    "sequence": [
+      {
+        "speaker": "Akihito",
+        "text": "Made it. The classroom is mostly empty this early."
+      },
+      {
+        "speaker": "Akihito",
+        "text": "I'll just take my usual seat at the back and wait for the lecture to start."
+      },
+      {
+        "speaker": "Akihito",
+        "text": "Hopefully, I won't pass out during Professor Sato's class."
+      }
+    ]
+  }
+}
