@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useGameStore, formatTime, type ClothingCategory } from '../store/gameStore';
+import { useGameStore, formatTime } from '../store/gameStore';
 import storyData from '../data/storyData.json';
 import type { StoryData, Choice, CharacterOnScreen } from '../types/storyTypes';
 
@@ -249,17 +249,6 @@ function StatusModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     cleanliness: { label: 'Cleanliness', icon: '✦', low: 'Filthy', high: 'Pristine' },
   };
 
-  const clothingIcons: Record<string, string> = {
-    tops: '👕',
-    bottoms: '👖',
-    shoes: '👟',
-    under: '🩲',
-    over: '🧥',
-    accessories: '💍',
-  };
-
-  const formatItemName = (id: string) => id.replace(/_/g, ' ');
-
   return (
     <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
       <div className="w-full max-w-md bg-neutral-900 border border-white/10 rounded flex flex-col shadow-2xl max-h-[80vh]">
@@ -364,7 +353,7 @@ function WardrobeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
         </div>
 
         {/* Body: Two-column layout */}
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
           {/* ── Left Column: Outfit Selection Cards ── */}
           <div className="flex-1 overflow-y-auto p-5 border-r border-white/5 flex flex-wrap gap-4 content-start">
             {OUTFITS.map((outfit) => {
@@ -399,7 +388,7 @@ function WardrobeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
           </div>
 
           {/* ── Right Column: Current Wear ── */}
-          <div className="w-[300px] flex-shrink-0 flex flex-col items-center p-5 bg-black/20">
+          <div className="w-full md:w-[300px] h-[250px] md:h-auto flex-shrink-0 flex flex-col items-center p-5 bg-black/20 border-t md:border-t-0 md:border-l border-white/5">
             <h4 className="text-[10px] uppercase tracking-[0.2em] text-white/40 text-center mb-4">Current Wear</h4>
             <div className="w-full flex-1 rounded border border-white/10 bg-black/40 relative overflow-hidden flex justify-center items-end">
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
