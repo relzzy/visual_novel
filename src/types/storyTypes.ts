@@ -27,11 +27,10 @@ export interface Choice {
   mcStatChange?: Record<string, number>;
 
   /**
-   * Optional clothing requirements for this choice to be available.
-   * Maps clothing category to the required item ID
-   * (e.g., { "tops": "school_uniform" }).
+   * Optional outfit requirement for this choice to be available.
+   * Specifies the required outfit ID (e.g., "school").
    */
-  requiresClothes?: Record<string, string>;
+  requiresOutfit?: string;
 
   /**
    * Optional items rewarded to the player when this choice is picked.

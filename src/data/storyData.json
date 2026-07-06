@@ -37,7 +37,7 @@
     "choices": [
       {
         "text": "Cook a simple meal",
-        "nextSceneId": "morning_routine",
+        "nextSceneId": "cook_scene",
         "timePassed": 30,
         "mcStatChange": {
           "energy": 20,
@@ -46,7 +46,7 @@
       },
       {
         "text": "Order breakfast delivery",
-        "nextSceneId": "morning_routine",
+        "nextSceneId": "order_scene",
         "timePassed": 10,
         "moneyCost": 800,
         "mcStatChange": {
@@ -66,6 +66,26 @@
       {
         "speaker": "Akihito",
         "text": "It's barely 5 AM. I should probably get something to eat before getting ready for Kousei University."
+      }
+    ]
+  },
+  "cook_scene": {
+    "backgroundImage": "/assets/backgrounds/cooking.png",
+    "nextSceneId": "morning_routine",
+    "sequence": [
+      {
+        "speaker": "Akihito",
+        "text": "Let's just cook. I've got plenty of time."
+      }
+    ]
+  },
+  "order_scene": {
+    "backgroundImage": "/assets/backgrounds/order_food_scene.png",
+    "nextSceneId": "morning_routine",
+    "sequence": [
+      {
+        "speaker": "Akihito",
+        "text": "I'm feeling lazy... let's just order."
       }
     ]
   },
@@ -125,7 +145,7 @@
         "position": "left"
       }
     ],
-    "nextSceneId": "classroom",
+    "nextSceneId": "college_front",
     "sequence": [
       {
         "speaker": "Akihito",
@@ -146,7 +166,7 @@
         "position": "left"
       }
     ],
-    "nextSceneId": "classroom",
+    "nextSceneId": "college_front",
     "sequence": [
       {
         "speaker": "Akihito",
@@ -155,6 +175,29 @@
       {
         "speaker": "Akihito",
         "text": "I can actually get a seat for once."
+      }
+    ]
+  },
+  "college_front": {
+    "backgroundImage": "/assets/backgrounds/clg_front.png",
+    "charactersOnScreen": [
+      {
+        "name": "Akihito",
+        "spriteUrl": "/assets/characters/mc_school_uniform-removebg-preview.png",
+        "position": "left"
+      }
+    ],
+    "choices": [
+      {
+        "text": "Enter College",
+        "nextSceneId": "classroom",
+        "requiresOutfit": "college"
+      }
+    ],
+    "sequence": [
+      {
+        "speaker": "Akihito",
+        "text": "Looks like it's not too crowded at this time."
       }
     ]
   },

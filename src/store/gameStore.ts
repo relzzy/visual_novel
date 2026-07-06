@@ -29,14 +29,6 @@ export interface InventoryItem {
   qty: number;
 }
 
-/** Clothing category keys. */
-export type ClothingCategory = 'tops' | 'bottoms' | 'shoes' | 'under' | 'over' | 'accessories';
-
-/** What the MC currently has equipped — one item per slot. */
-export type EquippedClothes = Record<ClothingCategory, string>;
-
-/** All unlocked clothing items — multiple items per category. */
-export type UnlockedClothes = Record<ClothingCategory, string[]>;
 
 export interface GameState {
   currentSceneId: string;
@@ -50,11 +42,8 @@ export interface GameState {
   /** Main Character personal stats. */
   mcStats: McStats;
 
-  /** Currently equipped clothing per slot. */
-  equippedClothes: EquippedClothes;
-
-  /** All clothing the player has unlocked per category. */
-  unlockedClothes: UnlockedClothes;
+  /** Currently equipped outfit. */
+  currentOutfit: string;
 
   /** Player's inventory — items collected throughout the story. */
   inventory: InventoryItem[];
@@ -75,14 +64,14 @@ export interface GameState {
   advanceLine: () => void;
   updateRelationship: (characterName: string, delta: number) => void;
   updateMcStat: (stat: keyof McStats, delta: number) => void;
-  equipItem: (category: ClothingCategory, itemId: string) => void;
+  setOutfit: (outfitId: string) => void;
   addItem: (id: string, name: string, qty: number) => void;
   removeItem: (id: string, qty: number) => void;
   updateMoney: (amount: number) => void;
   advanceTime: (minutes: number) => void;
   toggleRestartModal: (open?: boolean) => void;
   resetStore: () => void;
-  loadStore: (savedState: Pick<GameState, 'currentSceneId' | 'relationships' | 'mcStats' | 'equippedClothes' | 'unlockedClothes' | 'inventory' | 'money' | 'currentTime'>) => void;
+  loadStore: (savedState: Pick<GameState, 'currentSceneId' | 'relationships' | 'mcStats' | 'currentOutfit' | 'inventory' | 'money' | 'currentTime'>) => void;
 }
 
 // ─── Defaults ────────────────────────────────────────────────────────────────
@@ -92,23 +81,7 @@ const DEFAULT_MC_STATS: McStats = {
   cleanliness: 100,
 };
 
-const DEFAULT_EQUIPPED_CLOTHES: EquippedClothes = {
-  tops: 'basic_shirt',
-  bottoms: 'basic_pants',
-  shoes: 'basic_sneakers',
-  under: 'basic_underwear',
-  over: 'none',
-  accessories: 'none',
-};
-
-const DEFAULT_UNLOCKED_CLOTHES: UnlockedClothes = {
-  tops: ['basic_shirt'],
-  bottoms: ['basic_pants'],
-  shoes: ['basic_sneakers'],
-  under: ['basic_underwear'],
-  over: [],
-  accessories: [],
-};
+const DEFAULT_OUTFIT = 'sleepwear';
 
 // ─── Store ───────────────────────────────────────────────────────────────────
 
@@ -120,8 +93,7 @@ export const useGameStore = create<GameState>()((set) => ({
   currentLineIndex: 0,
   relationships: {},
   mcStats: { ...DEFAULT_MC_STATS },
-  equippedClothes: { ...DEFAULT_EQUIPPED_CLOTHES },
-  unlockedClothes: structuredClone(DEFAULT_UNLOCKED_CLOTHES),
+  currentOutfit: DEFAULT_OUTFIT,
   inventory: [],
   money: DEFAULT_MONEY,
   currentTime: DEFAULT_TIME,
@@ -157,13 +129,8 @@ export const useGameStore = create<GameState>()((set) => ({
       };
     }),
 
-  equipItem: (category, itemId) =>
-    set((state) => ({
-      equippedClothes: {
-        ...state.equippedClothes,
-        [category]: itemId,
-      },
-    })),
+  setOutfit: (outfitId) =>
+    set({ currentOutfit: outfitId }),
 
   addItem: (id, name, qty) =>
     set((state) => {
@@ -214,8 +181,7 @@ export const useGameStore = create<GameState>()((set) => ({
       currentLineIndex: 0,
       relationships: {},
       mcStats: { ...DEFAULT_MC_STATS },
-      equippedClothes: { ...DEFAULT_EQUIPPED_CLOTHES },
-      unlockedClothes: structuredClone(DEFAULT_UNLOCKED_CLOTHES),
+      currentOutfit: DEFAULT_OUTFIT,
       inventory: [],
       money: DEFAULT_MONEY,
       currentTime: DEFAULT_TIME,
@@ -228,8 +194,7 @@ export const useGameStore = create<GameState>()((set) => ({
       currentLineIndex: 0,
       relationships: savedState.relationships,
       mcStats: savedState.mcStats ?? { ...DEFAULT_MC_STATS },
-      equippedClothes: savedState.equippedClothes ?? { ...DEFAULT_EQUIPPED_CLOTHES },
-      unlockedClothes: savedState.unlockedClothes ?? structuredClone(DEFAULT_UNLOCKED_CLOTHES),
+      currentOutfit: savedState.currentOutfit ?? DEFAULT_OUTFIT,
       inventory: savedState.inventory ?? [],
       money: savedState.money ?? DEFAULT_MONEY,
       currentTime: savedState.currentTime ?? DEFAULT_TIME,

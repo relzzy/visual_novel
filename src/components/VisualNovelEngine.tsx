@@ -67,7 +67,7 @@ interface SaveLoadModalProps {
 }
 
 function SaveLoadModal({ mode, onClose }: SaveLoadModalProps) {
-  const { currentSceneId, relationships, mcStats, equippedClothes, unlockedClothes, inventory, money, currentTime, loadStore } = useGameStore();
+  const { currentSceneId, relationships, mcStats, currentOutfit, inventory, money, currentTime, loadStore } = useGameStore();
   const [slots, setSlots] = useState<(SaveSlot | null)[]>(Array(10).fill(null));
 
   useEffect(() => {
@@ -98,8 +98,7 @@ function SaveLoadModal({ mode, onClose }: SaveLoadModalProps) {
         currentSceneId,
         relationships,
         mcStats,
-        equippedClothes,
-        unlockedClothes,
+        currentOutfit,
         inventory,
         money,
         currentTime,
@@ -116,8 +115,7 @@ function SaveLoadModal({ mode, onClose }: SaveLoadModalProps) {
             currentSceneId: parsed.currentSceneId,
             relationships: parsed.relationships,
             mcStats: parsed.mcStats,
-            equippedClothes: parsed.equippedClothes,
-            unlockedClothes: parsed.unlockedClothes,
+            currentOutfit: parsed.currentOutfit,
             inventory: parsed.inventory,
             money: parsed.money,
             currentTime: parsed.currentTime,
@@ -242,7 +240,7 @@ function DirectoryModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
 // ─── Status Modal (MC Stats + Equipped Clothes) ─────────────────────────────
 
 function StatusModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const { mcStats, equippedClothes } = useGameStore();
+  const { mcStats, currentOutfit } = useGameStore();
 
   if (!isOpen) return null;
 
@@ -320,24 +318,17 @@ function StatusModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
             </div>
           </div>
 
-          {/* ── Equipped Clothes Section ── */}
+          {/* ── Equipped Outfit Section ── */}
           <div>
-            <h3 className="text-[10px] uppercase tracking-[0.25em] text-white/40 mb-4 border-b border-white/5 pb-2">Equipped Clothing</h3>
-            <div className="grid grid-cols-2 gap-3">
-              {Object.entries(equippedClothes).map(([category, itemId]) => (
-                <div
-                  key={category}
-                  className="flex items-center gap-3 p-3 border border-white/5 bg-white/[0.02] rounded"
-                >
-                  <span className="text-lg opacity-50">{clothingIcons[category] || '●'}</span>
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-[9px] uppercase tracking-[0.2em] text-white/35">{category}</span>
-                    <span className="text-xs text-white/70 uppercase tracking-wide truncate">
-                      {itemId === 'none' ? '—' : formatItemName(itemId)}
-                    </span>
-                  </div>
-                </div>
-              ))}
+            <h3 className="text-[10px] uppercase tracking-[0.25em] text-white/40 mb-4 border-b border-white/5 pb-2">Current Outfit</h3>
+            <div className="flex items-center gap-3 p-3 border border-white/5 bg-white/[0.02] rounded">
+              <span className="text-lg opacity-50">🧥</span>
+              <div className="flex flex-col min-w-0">
+                <span className="text-[9px] uppercase tracking-[0.2em] text-white/35">Outfit</span>
+                <span className="text-xs text-white/70 uppercase tracking-wide truncate">
+                  {currentOutfit}
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -348,23 +339,18 @@ function StatusModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
 
 // ─── Wardrobe Modal ──────────────────────────────────────────────────────────
 
-const CATEGORY_ORDER: ClothingCategory[] = ['tops', 'bottoms', 'shoes', 'under', 'over', 'accessories'];
-
-const CATEGORY_LABELS: Record<ClothingCategory, { label: string; icon: string }> = {
-  tops: { label: 'Tops', icon: '👕' },
-  bottoms: { label: 'Bottoms', icon: '👖' },
-  shoes: { label: 'Shoes', icon: '👟' },
-  under: { label: 'Under', icon: '🩲' },
-  over: { label: 'Over', icon: '🧥' },
-  accessories: { label: 'Accessories', icon: '💍' },
-};
+const OUTFITS = [
+  { id: 'casual', name: 'Casual', img: '/assets/characters/mc_casual.png' },
+  { id: 'college', name: 'College', img: '/assets/characters/mc_school_uniform-removebg-preview.png' },
+  { id: 'sleepwear', name: 'Sleepwear', img: '/assets/characters/mc_sleepwear.png' },
+];
 
 function WardrobeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const { equippedClothes, unlockedClothes, equipItem } = useGameStore();
+  const { currentOutfit, setOutfit } = useGameStore();
 
   if (!isOpen) return null;
 
-  const formatName = (id: string) => id.replace(/_/g, ' ');
+  const activeOutfitObj = OUTFITS.find((o) => o.id === currentOutfit) || OUTFITS[0];
 
   return (
     <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
@@ -379,112 +365,52 @@ function WardrobeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
 
         {/* Body: Two-column layout */}
         <div className="flex-1 flex overflow-hidden">
-          {/* ── Left Column: Item Grid ── */}
-          <div className="flex-1 overflow-y-auto p-5 space-y-6 border-r border-white/5">
-            {CATEGORY_ORDER.map((category) => {
-              const items = unlockedClothes[category];
-              const equipped = equippedClothes[category];
-              const meta = CATEGORY_LABELS[category];
-
+          {/* ── Left Column: Outfit Selection Cards ── */}
+          <div className="flex-1 overflow-y-auto p-5 border-r border-white/5 flex flex-wrap gap-4 content-start">
+            {OUTFITS.map((outfit) => {
+              const isEquipped = currentOutfit === outfit.id;
               return (
-                <div key={category}>
-                  {/* Category Header */}
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-sm opacity-50">{meta.icon}</span>
-                    <h3 className="text-[10px] uppercase tracking-[0.25em] text-white/40">{meta.label}</h3>
-                    <div className="flex-1 h-px bg-white/5" />
+                <button
+                  key={outfit.id}
+                  onClick={() => setOutfit(outfit.id)}
+                  className={`
+                    w-[120px] h-[160px] rounded flex flex-col items-center p-2
+                    border transition-all duration-200 cursor-pointer group relative
+                    ${isEquipped
+                      ? 'border-white/60 bg-white/10 shadow-[0_0_12px_rgba(255,255,255,0.08)]'
+                      : 'border-white/10 bg-black/40 hover:border-white/30 hover:bg-white/[0.05]'
+                    }
+                  `}
+                >
+                  <span className={`text-[10px] uppercase tracking-[0.15em] mb-2 text-center w-full truncate ${isEquipped ? 'text-white/90' : 'text-white/50 group-hover:text-white/70'}`}>
+                    {outfit.name}
+                  </span>
+                  <div className="flex-1 w-full bg-black/50 border border-white/5 rounded overflow-hidden relative">
+                    <img
+                      src={outfit.img}
+                      alt={outfit.name}
+                      className="absolute inset-0 w-full h-full object-cover object-top opacity-80 group-hover:opacity-100 transition-opacity"
+                      draggable={false}
+                    />
                   </div>
-
-                  {/* Horizontal scrollable item row */}
-                  {items.length === 0 ? (
-                    <div className="text-[10px] text-white/20 uppercase tracking-widest pl-1">
-                      No items unlocked
-                    </div>
-                  ) : (
-                    <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent' }}>
-                      {items.map((itemId) => {
-                        const isEquipped = equipped === itemId;
-                        return (
-                          <button
-                            key={itemId}
-                            onClick={() => equipItem(category, itemId)}
-                            className={`
-                              flex-shrink-0 w-[100px] h-[100px] rounded
-                              flex flex-col items-center justify-center gap-2
-                              border transition-all duration-200
-                              ${isEquipped
-                                ? 'border-white/60 bg-white/10 shadow-[0_0_12px_rgba(255,255,255,0.08)]'
-                                : 'border-white/10 bg-black/40 hover:border-white/30 hover:bg-white/[0.05]'
-                              }
-                              cursor-pointer group
-                            `}
-                          >
-                            <img
-                              src={`https://placehold.co/60x60/1a1a1a/666666?text=${encodeURIComponent(formatName(itemId).slice(0, 8))}`}
-                              alt={formatName(itemId)}
-                              className="w-[52px] h-[52px] rounded object-cover opacity-70 group-hover:opacity-100 transition-opacity"
-                              draggable={false}
-                            />
-                            <span className={`
-                              text-[8px] uppercase tracking-[0.1em] text-center leading-tight px-1 truncate w-full
-                              ${isEquipped ? 'text-white/80' : 'text-white/40 group-hover:text-white/60'}
-                            `}>
-                              {formatName(itemId)}
-                            </span>
-                            {isEquipped && (
-                              <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-white/50" />
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                </button>
               );
             })}
           </div>
 
-          {/* ── Right Column: Character Preview ── */}
-          <div className="w-[240px] flex-shrink-0 flex flex-col items-center p-5 bg-black/20">
-            <div className="sticky top-0 flex flex-col items-center gap-5 w-full">
-              {/* Character silhouette placeholder */}
-              <div className="w-[160px] h-[280px] rounded border border-white/10 bg-black/40 flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent" />
-                <div className="flex flex-col items-center gap-2 relative z-10">
-                  {/* Simple stick-figure silhouette */}
-                  <div className="w-10 h-10 rounded-full border border-white/20 bg-white/[0.04]" />
-                  <div className="w-px h-12 bg-white/15" />
-                  <div className="w-16 h-px bg-white/15" />
-                  <div className="flex gap-6">
-                    <div className="w-px h-10 bg-white/15" />
-                    <div className="w-px h-10 bg-white/15" />
-                  </div>
-                  <span className="text-[8px] text-white/25 uppercase tracking-widest mt-2">Preview</span>
-                </div>
-              </div>
-
-              {/* Equipped items summary */}
-              <div className="w-full space-y-2">
-                <h4 className="text-[9px] uppercase tracking-[0.2em] text-white/30 text-center mb-3">Currently Wearing</h4>
-                {CATEGORY_ORDER.map((category) => {
-                  const itemId = equippedClothes[category];
-                  const meta = CATEGORY_LABELS[category];
-                  return (
-                    <div
-                      key={category}
-                      className="flex items-center gap-2.5 px-2 py-1.5 rounded bg-white/[0.02]"
-                    >
-                      <span className="text-xs opacity-40">{meta.icon}</span>
-                      <div className="flex flex-col min-w-0 flex-1">
-                        <span className="text-[7px] uppercase tracking-[0.15em] text-white/25">{meta.label}</span>
-                        <span className="text-[10px] text-white/60 uppercase tracking-wide truncate">
-                          {itemId === 'none' ? '—' : formatName(itemId)}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+          {/* ── Right Column: Current Wear ── */}
+          <div className="w-[300px] flex-shrink-0 flex flex-col items-center p-5 bg-black/20">
+            <h4 className="text-[10px] uppercase tracking-[0.2em] text-white/40 text-center mb-4">Current Wear</h4>
+            <div className="w-full flex-1 rounded border border-white/10 bg-black/40 relative overflow-hidden flex justify-center items-end">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
+              <img
+                key={activeOutfitObj.id}
+                src={activeOutfitObj.img}
+                alt={activeOutfitObj.name}
+                className="w-[90%] h-[90%] object-contain object-bottom animate-fade-in z-0 relative"
+                style={{ filter: 'drop-shadow(0 0 20px rgba(0,0,0,0.5))' }}
+                draggable={false}
+              />
             </div>
           </div>
         </div>
@@ -594,7 +520,7 @@ interface DialogueBoxProps {
 }
 
 function DialogueBox({ scene, speaker, displayed, done, isLastLine, skip, onAdvanceLine, onChoice, onNextScene, disabled, onOpenModal, onOpenDirectory, onOpenStatus, onOpenInventory }: DialogueBoxProps) {
-  const { relationships, equippedClothes, inventory, money, currentTime, toggleRestartModal } = useGameStore();
+  const { relationships, currentOutfit, inventory, money, currentTime, toggleRestartModal } = useGameStore();
 
   const handleBoxClick = () => {
     if (!done) {
@@ -675,14 +601,11 @@ function DialogueBox({ scene, speaker, displayed, done, isLastLine, skip, onAdva
                   }
                 }
 
-                // Check clothing requirements
-                if (reqMet && choice.requiresClothes) {
-                  for (const [cat, itemId] of Object.entries(choice.requiresClothes)) {
-                    if (equippedClothes[cat as keyof typeof equippedClothes] !== itemId) {
-                      reqMet = false;
-                      lockReason = `Requires: ${itemId.replace(/_/g, ' ')}`;
-                      break;
-                    }
+                // Check outfit requirement
+                if (reqMet && choice.requiresOutfit) {
+                  if (currentOutfit !== choice.requiresOutfit) {
+                    reqMet = false;
+                    lockReason = `Requires: ${choice.requiresOutfit.replace(/_/g, ' ')}`;
                   }
                 }
 
@@ -879,7 +802,7 @@ function GameMenu({ isOpen, onToggle, onOpenStatus, onOpenDirectory, onOpenWardr
 // ─── Main Engine ─────────────────────────────────────────────────────────────
 
 export default function VisualNovelEngine() {
-  const { currentSceneId, currentLineIndex, setScene, advanceLine, updateRelationship, updateMcStat, addItem, money, updateMoney, currentTime, advanceTime, isRestartModalOpen, toggleRestartModal, resetStore } = useGameStore();
+  const { currentSceneId, currentLineIndex, setScene, advanceLine, updateRelationship, updateMcStat, addItem, money, updateMoney, currentTime, advanceTime, isRestartModalOpen, toggleRestartModal, resetStore, currentOutfit } = useGameStore();
   const scene = story[currentSceneId];
 
   // Derive current sequence line
@@ -1170,10 +1093,21 @@ export default function VisualNovelEngine() {
               right: 'right-0 sm:right-8',
             };
 
+            // MC Outfit Override
+            let spriteUrl = char.spriteUrl;
+            if (char.name === 'MC' || char.name === 'Akihito') {
+              const OUTFITS: Record<string, string> = {
+                'casual': '/assets/characters/mc_casual.png',
+                'college': '/assets/characters/mc_school_uniform-removebg-preview.png',
+                'sleepwear': '/assets/characters/mc_sleepwear.png',
+              };
+              spriteUrl = OUTFITS[currentOutfit] || OUTFITS['casual'];
+            }
+
             return (
               <img
                 key={`${char.name}-${char.position}-${idx}`}
-                src={char.spriteUrl}
+                src={spriteUrl}
                 alt={char.name}
                 draggable={false}
                 className={`absolute bottom-0 h-[75vh] object-contain transition-opacity duration-700 ${positionStyles[char.position] || positionStyles.center}`}
