@@ -805,11 +805,11 @@ interface MobileHotbarProps {
 
 function MobileHotbar({ onOpenStatus, onOpenDirectory, onOpenWardrobe, onOpenInventory, onSave, onLoad, onRestart }: MobileHotbarProps) {
   const btnClass = "flex flex-col items-center justify-center gap-0.5 flex-1 h-full text-white/40 active:text-white active:bg-white/10 transition-colors";
-  const iconClass = "w-[18px] h-[18px]";
-  const labelClass = "text-[7px] tracking-[0.1em] uppercase leading-none";
+  const iconClass = "w-5 h-5";
+  const labelClass = "text-[8px] tracking-[0.12em] uppercase leading-none";
 
   return (
-    <div className="vn-mobile-hotbar absolute bottom-0 inset-x-0 z-[60] h-12 hidden items-center bg-neutral-950/90 backdrop-blur-md border-t border-white/10">
+    <div className="vn-mobile-hotbar absolute bottom-0 inset-x-0 z-[60] h-14 items-center bg-neutral-950/95 backdrop-blur-md border-t border-white/15">
       <button className={btnClass} onClick={onOpenStatus}>
         <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
@@ -1001,7 +1001,7 @@ export default function VisualNovelEngine() {
   // ── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-black select-none">
+    <div className="relative w-screen h-screen overflow-hidden bg-black select-none" style={{ touchAction: 'manipulation' }}>
       {/* ── Background ──────────────────────────────────────── */}
       <img
         key={scene.backgroundImage}
