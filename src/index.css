@@ -104,10 +104,6 @@ html {
   touch-action: manipulation;
 }
 
-/* Hotbar: hidden by default (not using Tailwind `hidden` to avoid layer conflicts) */
-.vn-mobile-hotbar {
-  display: none;
-}
 
 /* Targets phones in landscape: coarse pointer + short viewport + landscape   */
 
@@ -164,8 +160,6 @@ html {
   .vn-quick-menu   { display: none !important; }
   .vn-edge-toggle  { display: none !important; }
 
-  /* ── Show mobile hotbar ── */
-  .vn-mobile-hotbar { display: flex !important; }
 
   /* ── Shrink & reposition HUDs ── */
   .vn-hud-money {

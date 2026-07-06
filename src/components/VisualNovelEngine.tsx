@@ -790,10 +790,12 @@ function DialogueBox({ scene, speaker, displayed, done, isLastLine, skip, onAdva
   );
 }
 
-// ─── Mobile Hotbar ───────────────────────────────────────────────────────────
-// Hidden by default; revealed via CSS media query on mobile landscape.
+// ─── Game Menu (Hamburger Dropdown) ──────────────────────────────────────────
+// Always visible — positioned next to the money HUD as a hamburger icon.
 
-interface MobileHotbarProps {
+interface GameMenuProps {
+  isOpen: boolean;
+  onToggle: () => void;
   onOpenStatus: () => void;
   onOpenDirectory: () => void;
   onOpenWardrobe: () => void;
@@ -803,68 +805,74 @@ interface MobileHotbarProps {
   onRestart: () => void;
 }
 
-function MobileHotbar({ onOpenStatus, onOpenDirectory, onOpenWardrobe, onOpenInventory, onSave, onLoad, onRestart }: MobileHotbarProps) {
-  const btnClass = "flex flex-col items-center justify-center gap-0.5 flex-1 h-full text-white/40 active:text-white active:bg-white/10 transition-colors";
-  const iconClass = "w-5 h-5";
-  const labelClass = "text-[8px] tracking-[0.12em] uppercase leading-none";
+function GameMenu({ isOpen, onToggle, onOpenStatus, onOpenDirectory, onOpenWardrobe, onOpenInventory, onSave, onLoad, onRestart }: GameMenuProps) {
+  const menuItems = [
+    { label: 'Status', icon: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2', icon2: 'M12 7a4 4 0 1 0 0-0.01', onClick: onOpenStatus },
+    { label: 'Directory', icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2', icon2: 'M9 7a4 4 0 1 0 0-0.01', onClick: onOpenDirectory },
+    { label: 'Wardrobe', icon: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5', onClick: onOpenWardrobe },
+    { label: 'Inventory', icon: 'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z', onClick: onOpenInventory },
+    { label: 'Save', icon: 'M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z', onClick: onSave },
+    { label: 'Load', icon: 'M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z', onClick: onLoad },
+  ];
 
   return (
-    <div className="vn-mobile-hotbar absolute bottom-0 inset-x-0 z-[60] h-14 items-center bg-neutral-950/95 backdrop-blur-md border-t border-white/15">
-      <button className={btnClass} onClick={onOpenStatus}>
-        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+    <>
+      {/* Hamburger Button */}
+      <button
+        onClick={onToggle}
+        className={`
+          w-11 h-11 rounded-lg flex items-center justify-center transition-all duration-200
+          border backdrop-blur-md shadow-[0_4px_12px_rgba(0,0,0,0.5)]
+          ${isOpen
+            ? 'bg-white/15 border-white/30 text-white'
+            : 'bg-neutral-950/70 border-white/10 text-white/50 active:bg-white/15 active:text-white'
+          }
+        `}
+      >
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          {isOpen ? (
+            <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>
+          ) : (
+            <><line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" /></>
+          )}
         </svg>
-        <span className={labelClass}>Status</span>
       </button>
 
-      <button className={btnClass} onClick={onOpenDirectory}>
-        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-        </svg>
-        <span className={labelClass}>Directory</span>
-      </button>
+      {/* Dropdown */}
+      {isOpen && (
+        <div className="absolute top-full left-0 mt-2 w-44 backdrop-blur-xl bg-neutral-950/95 border border-white/10 rounded-lg overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.7)] z-[70] animate-fade-in">
+          {menuItems.map((item, i) => (
+            <button
+              key={item.label}
+              onClick={() => { item.onClick(); onToggle(); }}
+              className={`
+                w-full flex items-center gap-3 px-4 py-3 text-left
+                text-xs uppercase tracking-[0.15em] text-white/60
+                active:bg-white/10 active:text-white transition-colors
+                ${i < menuItems.length - 1 ? 'border-b border-white/5' : ''}
+              `}
+            >
+              <svg className="w-4 h-4 flex-shrink-0 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d={item.icon} />
+                {item.icon2 && <path d={item.icon2} />}
+              </svg>
+              {item.label}
+            </button>
+          ))}
 
-      <button className={btnClass} onClick={onOpenWardrobe}>
-        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-        </svg>
-        <span className={labelClass}>Wardrobe</span>
-      </button>
-
-      <button className={btnClass} onClick={onOpenInventory}>
-        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
-        </svg>
-        <span className={labelClass}>Items</span>
-      </button>
-
-      {/* Divider */}
-      <div className="w-px h-6 bg-white/10 flex-shrink-0" />
-
-      <button className={btnClass} onClick={onSave}>
-        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
-        </svg>
-        <span className={labelClass}>Save</span>
-      </button>
-
-      <button className={btnClass} onClick={onLoad}>
-        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-        </svg>
-        <span className={labelClass}>Load</span>
-      </button>
-
-      {/* Divider */}
-      <div className="w-px h-6 bg-white/10 flex-shrink-0" />
-
-      <button className={`${btnClass} !text-red-400/40 active:!text-red-400 active:!bg-red-500/10`} onClick={onRestart}>
-        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
-        </svg>
-        <span className={labelClass}>Reset</span>
-      </button>
-    </div>
+          {/* Restart — separated with stronger border */}
+          <button
+            onClick={() => { onRestart(); onToggle(); }}
+            className="w-full flex items-center gap-3 px-4 py-3 text-left text-xs uppercase tracking-[0.15em] text-red-400/60 active:bg-red-500/10 active:text-red-400 transition-colors border-t border-white/10"
+          >
+            <svg className="w-4 h-4 flex-shrink-0 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+            </svg>
+            Restart
+          </button>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -889,6 +897,7 @@ export default function VisualNovelEngine() {
   const [inventoryOpen, setInventoryOpen] = useState(false);
   const [notifications, setNotifications] = useState<Array<{ id: number, text: string, color: string }>>([]);
   const [timeDropdownOpen, setTimeDropdownOpen] = useState(false);
+  const [gameMenuOpen, setGameMenuOpen] = useState(false);
 
   // Pre-load background images and character sprites for smoother transitions
   useEffect(() => {
@@ -1023,8 +1032,24 @@ export default function VisualNovelEngine() {
         }}
       />
 
-      {/* ── Top-Left Money HUD ────────────────────────────────── */}
-      <div className="vn-hud-money absolute top-6 left-8 z-40">
+      {/* ── Top-Left: Money HUD + Menu Button ─────────────────── */}
+      <div className="vn-hud-money absolute top-6 left-8 z-40 flex items-center gap-3">
+        {/* Menu Button */}
+        <div className="relative">
+          <GameMenu
+            isOpen={gameMenuOpen}
+            onToggle={() => setGameMenuOpen(o => !o)}
+            onOpenStatus={() => { setMcStatusOpen(true); setStatusOpen(true); }}
+            onOpenDirectory={() => setDirectoryOpen(true)}
+            onOpenWardrobe={() => setWardrobeOpen(true)}
+            onOpenInventory={() => setInventoryOpen(true)}
+            onSave={() => setModalMode('save')}
+            onLoad={() => setModalMode('load')}
+            onRestart={() => toggleRestartModal(true)}
+          />
+        </div>
+
+        {/* Money Badge */}
         <div className="flex items-center gap-3 bg-gradient-to-b from-amber-500 to-amber-700 px-6 py-3 rounded-lg border-2 border-amber-300/50 shadow-[0_8px_16px_rgba(0,0,0,0.6),_inset_0_2px_4px_rgba(255,255,255,0.4)] transform hover:scale-105 transition-transform duration-300">
           <span className="text-amber-100 text-3xl font-black drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] font-sans">
             ¤
@@ -1196,16 +1221,6 @@ export default function VisualNovelEngine() {
         onOpenInventory={() => setInventoryOpen(true)}
       />
 
-      {/* ── Mobile Hotbar ───────────────────────────────────── */}
-      <MobileHotbar
-        onOpenStatus={() => { setMcStatusOpen(true); setStatusOpen(true); }}
-        onOpenDirectory={() => setDirectoryOpen(true)}
-        onOpenWardrobe={() => setWardrobeOpen(true)}
-        onOpenInventory={() => setInventoryOpen(true)}
-        onSave={() => setModalMode('save')}
-        onLoad={() => setModalMode('load')}
-        onRestart={() => toggleRestartModal(true)}
-      />
 
       {/* ── Transition Overlay ───────────────────────────────── */}
       <div
