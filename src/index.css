@@ -41,6 +41,13 @@
   to { opacity: 1; }
 }
 
+@keyframes rotateHint {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(-90deg); }
+  60% { transform: rotate(-90deg); }
+  90% { transform: rotate(0deg); }
+}
+
 @keyframes fadeOutUp {
   0% {
     opacity: 1;
@@ -88,4 +95,104 @@ html, body, #root {
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 2px;
+}
+
+/* ─── Mobile Landscape Layout ─────────────────────────────────────────────── */
+/* Targets phones in landscape: coarse pointer + short viewport + landscape   */
+
+@media (orientation: landscape) and (pointer: coarse) and (max-height: 500px) {
+
+  /* ── Dialogue panel: bottom → right column ── */
+  .vn-dialogue-panel {
+    inset: 0 0 48px auto !important;
+    width: 44% !important;
+    padding: 0 !important;
+  }
+
+  .vn-dialogue-inner {
+    border-top: none !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 14px 16px 10px !important;
+  }
+
+  .vn-dialogue-text {
+    min-height: 0 !important;
+    font-size: 0.8125rem !important;
+    flex: 1;
+    overflow-y: auto;
+    line-height: 1.6;
+  }
+
+  .vn-speaker {
+    font-size: 0.7rem !important;
+    margin-bottom: 8px !important;
+  }
+
+  .vn-choices {
+    margin-top: 8px !important;
+    gap: 6px !important;
+    max-height: 40%;
+    overflow-y: auto;
+  }
+
+  .vn-choices button {
+    padding: 8px 12px !important;
+    font-size: 0.65rem !important;
+  }
+
+  .vn-continue-hint {
+    bottom: 4px !important;
+    right: 10px !important;
+    font-size: 0.6rem !important;
+  }
+
+  /* ── Hide desktop-only navigation ── */
+  .vn-quick-menu   { display: none !important; }
+  .vn-edge-toggle  { display: none !important; }
+
+  /* ── Show mobile hotbar ── */
+  .vn-mobile-hotbar { display: flex !important; }
+
+  /* ── Shrink & reposition HUDs ── */
+  .vn-hud-money {
+    transform: scale(0.65);
+    transform-origin: top left;
+    top: 8px !important;
+    left: 8px !important;
+  }
+
+  .vn-hud-clock {
+    transform: scale(0.7);
+    transform-origin: top right;
+    top: 8px !important;
+    right: auto !important;
+    /* Position clock above dialogue column */
+    left: calc(56% + 4px) !important;
+    transform-origin: top left;
+  }
+
+  /* ── Bottom gradient: shift to right-to-left for dialogue column ── */
+  .vn-gradient {
+    background: linear-gradient(
+      to left,
+      rgba(0, 0, 0, 0.85) 0%,
+      rgba(0, 0, 0, 0.4) 40%,
+      transparent 70%
+    ) !important;
+    height: 100% !important;
+  }
+
+  /* ── Sprites: prevent overlap with dialogue ── */
+  .vn-sprite-layer img {
+    max-width: 56vw;
+    max-height: calc(100vh - 48px);
+  }
+
+  /* ── Transition overlay accounts for hotbar ── */
+  .vn-transition-overlay {
+    bottom: 0 !important;
+  }
 }

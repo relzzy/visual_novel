@@ -1,5 +1,10 @@
+import OrientationGuard from './components/OrientationGuard';
 import VisualNovelEngine from './components/VisualNovelEngine';
 
 export default function App() {
-  return <VisualNovelEngine />;
+  return (
+    <OrientationGuard>
+      <VisualNovelEngine />
+    </OrientationGuard>
+  );
 }

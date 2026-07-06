@@ -620,12 +620,12 @@ function DialogueBox({ scene, speaker, displayed, done, isLastLine, skip, onAdva
 
   return (
     <div
-      className="absolute inset-x-0 bottom-0 z-20 px-4 pb-4 sm:px-8 sm:pb-8"
+      className="vn-dialogue-panel absolute inset-x-0 bottom-0 z-20 px-4 pb-4 sm:px-8 sm:pb-8"
       onClick={handleBoxClick}
     >
       <div className="max-w-5xl mx-auto w-full relative">
         {/* Quick Menu */}
-        <div className="absolute -top-8 right-2 flex items-center gap-5 text-[10px] sm:text-xs tracking-[0.2em] text-white/30 uppercase z-30">
+        <div className="vn-quick-menu absolute -top-8 right-2 flex items-center gap-5 text-[10px] sm:text-xs tracking-[0.2em] text-white/30 uppercase z-30">
           <button className="hover:text-white transition-colors" onClick={(e) => { e.stopPropagation(); onOpenStatus(); }}>Status</button>
           <button className="hover:text-white transition-colors" onClick={(e) => { e.stopPropagation(); onOpenDirectory(); }}>Directory</button>
           <button className="hover:text-white transition-colors" onClick={(e) => { e.stopPropagation(); onOpenInventory(); }}>Inventory</button>
@@ -640,17 +640,17 @@ function DialogueBox({ scene, speaker, displayed, done, isLastLine, skip, onAdva
         </div>
 
         <div
-          className="backdrop-blur-md bg-neutral-950/90 border-t border-white/10 p-6 sm:p-8 cursor-pointer relative"
+          className="vn-dialogue-inner backdrop-blur-md bg-neutral-950/90 border-t border-white/10 p-6 sm:p-8 cursor-pointer relative"
         >
           {/* Speaker Name */}
-          <div className="mb-4">
+          <div className="vn-speaker mb-4">
             <span className="text-white text-sm sm:text-base tracking-[0.15em] font-medium uppercase">
               {speaker}
             </span>
           </div>
 
           {/* Dialogue text */}
-          <p className="text-white/80 leading-relaxed min-h-[6rem] text-base sm:text-lg font-light tracking-wide">
+          <p className="vn-dialogue-text text-white/80 leading-relaxed min-h-[6rem] text-base sm:text-lg font-light tracking-wide">
             {displayed}
             {!done && (
               <span className="inline-block w-2 h-4 ml-1 align-middle animate-blink bg-white/50" />
@@ -659,7 +659,7 @@ function DialogueBox({ scene, speaker, displayed, done, isLastLine, skip, onAdva
 
           {/* Choices — only shown on the last line of the sequence */}
           {done && isLastLine && scene.choices && scene.choices.length > 0 && (
-            <div className="mt-6 flex flex-col gap-3">
+            <div className="vn-choices mt-6 flex flex-col gap-3">
               {scene.choices.map((choice, i) => {
                 let reqMet = true;
                 let lockReason = '';
@@ -780,12 +780,90 @@ function DialogueBox({ scene, speaker, displayed, done, isLastLine, skip, onAdva
 
           {/* Continue hint */}
           {showContinueHint && (
-            <div className="absolute bottom-4 right-6 text-white/20 text-xs tracking-widest uppercase animate-pulse font-sans">
-              Click to continue
+            <div className="vn-continue-hint absolute bottom-4 right-6 text-white/20 text-xs tracking-widest uppercase animate-pulse font-sans">
+              Tap to continue
             </div>
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+// ─── Mobile Hotbar ───────────────────────────────────────────────────────────
+// Hidden by default; revealed via CSS media query on mobile landscape.
+
+interface MobileHotbarProps {
+  onOpenStatus: () => void;
+  onOpenDirectory: () => void;
+  onOpenWardrobe: () => void;
+  onOpenInventory: () => void;
+  onSave: () => void;
+  onLoad: () => void;
+  onRestart: () => void;
+}
+
+function MobileHotbar({ onOpenStatus, onOpenDirectory, onOpenWardrobe, onOpenInventory, onSave, onLoad, onRestart }: MobileHotbarProps) {
+  const btnClass = "flex flex-col items-center justify-center gap-0.5 flex-1 h-full text-white/40 active:text-white active:bg-white/10 transition-colors";
+  const iconClass = "w-[18px] h-[18px]";
+  const labelClass = "text-[7px] tracking-[0.1em] uppercase leading-none";
+
+  return (
+    <div className="vn-mobile-hotbar absolute bottom-0 inset-x-0 z-[60] h-12 hidden items-center bg-neutral-950/90 backdrop-blur-md border-t border-white/10">
+      <button className={btnClass} onClick={onOpenStatus}>
+        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span className={labelClass}>Status</span>
+      </button>
+
+      <button className={btnClass} onClick={onOpenDirectory}>
+        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        <span className={labelClass}>Directory</span>
+      </button>
+
+      <button className={btnClass} onClick={onOpenWardrobe}>
+        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+        </svg>
+        <span className={labelClass}>Wardrobe</span>
+      </button>
+
+      <button className={btnClass} onClick={onOpenInventory}>
+        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+        </svg>
+        <span className={labelClass}>Items</span>
+      </button>
+
+      {/* Divider */}
+      <div className="w-px h-6 bg-white/10 flex-shrink-0" />
+
+      <button className={btnClass} onClick={onSave}>
+        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+        </svg>
+        <span className={labelClass}>Save</span>
+      </button>
+
+      <button className={btnClass} onClick={onLoad}>
+        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span className={labelClass}>Load</span>
+      </button>
+
+      {/* Divider */}
+      <div className="w-px h-6 bg-white/10 flex-shrink-0" />
+
+      <button className={`${btnClass} !text-red-400/40 active:!text-red-400 active:!bg-red-500/10`} onClick={onRestart}>
+        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+        </svg>
+        <span className={labelClass}>Reset</span>
+      </button>
     </div>
   );
 }
@@ -938,7 +1016,7 @@ export default function VisualNovelEngine() {
 
       {/* Bottom gradient for dialogue legibility */}
       <div
-        className="absolute inset-x-0 bottom-0 h-1/2 pointer-events-none"
+        className="vn-gradient absolute inset-x-0 bottom-0 h-1/2 pointer-events-none"
         style={{
           background:
             'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 45%, transparent 100%)',
@@ -946,7 +1024,7 @@ export default function VisualNovelEngine() {
       />
 
       {/* ── Top-Left Money HUD ────────────────────────────────── */}
-      <div className="absolute top-6 left-8 z-40">
+      <div className="vn-hud-money absolute top-6 left-8 z-40">
         <div className="flex items-center gap-3 bg-gradient-to-b from-amber-500 to-amber-700 px-6 py-3 rounded-lg border-2 border-amber-300/50 shadow-[0_8px_16px_rgba(0,0,0,0.6),_inset_0_2px_4px_rgba(255,255,255,0.4)] transform hover:scale-105 transition-transform duration-300">
           <span className="text-amber-100 text-3xl font-black drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] font-sans">
             ¤
@@ -958,7 +1036,7 @@ export default function VisualNovelEngine() {
       </div>
 
       {/* ── Top-Right Clock HUD ───────────────────────────────── */}
-      <div className="absolute top-6 right-8 z-50">
+      <div className="vn-hud-clock absolute top-6 right-8 z-50">
         <div 
           onClick={() => setTimeDropdownOpen(!timeDropdownOpen)}
           className="flex items-center gap-3 backdrop-blur-md bg-neutral-950/70 border border-white/10 px-5 py-2.5 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.5)] hover:bg-neutral-900/80 transition-all duration-300 group cursor-pointer relative"
@@ -1016,7 +1094,7 @@ export default function VisualNovelEngine() {
       </div>
 
       {/* ── Left-edge Toggles ────────────────────────────────── */}
-      <div className="absolute left-0 top-1/2 -translate-y-1/2 z-40 flex flex-col gap-2">
+      <div className="vn-edge-toggle absolute left-0 top-1/2 -translate-y-1/2 z-40 flex flex-col gap-2">
         <button 
           onClick={() => setDirectoryOpen(true)}
           className="bg-neutral-950/80 backdrop-blur-md border border-white/10 border-l-0 rounded-r-md py-6 px-1.5 hover:bg-white/10 transition-colors flex items-center justify-center group"
@@ -1042,7 +1120,7 @@ export default function VisualNovelEngine() {
       </div>
 
       {/* ── Right-edge MC Status Toggle ───────────────────────── */}
-      <div className="absolute right-0 top-1/2 -translate-y-1/2 z-40">
+      <div className="vn-edge-toggle absolute right-0 top-1/2 -translate-y-1/2 z-40">
         <button 
           onClick={() => setMcStatusOpen(true)}
           className="bg-neutral-950/80 backdrop-blur-md border border-white/10 border-r-0 rounded-l-md py-6 px-1.5 hover:bg-white/10 transition-colors flex items-center justify-center group"
@@ -1058,7 +1136,7 @@ export default function VisualNovelEngine() {
 
       {/* ── Character Sprites (Multi-Sprite Rendering) ────────── */}
       {scene.charactersOnScreen && scene.charactersOnScreen.length > 0 && (
-        <div className="absolute inset-0 z-10 pointer-events-none">
+        <div className="vn-sprite-layer absolute inset-0 z-10 pointer-events-none">
           {scene.charactersOnScreen.map((char, idx) => {
             // Position classes based on char.position
             const positionStyles: Record<string, string> = {
@@ -1118,9 +1196,20 @@ export default function VisualNovelEngine() {
         onOpenInventory={() => setInventoryOpen(true)}
       />
 
+      {/* ── Mobile Hotbar ───────────────────────────────────── */}
+      <MobileHotbar
+        onOpenStatus={() => { setMcStatusOpen(true); setStatusOpen(true); }}
+        onOpenDirectory={() => setDirectoryOpen(true)}
+        onOpenWardrobe={() => setWardrobeOpen(true)}
+        onOpenInventory={() => setInventoryOpen(true)}
+        onSave={() => setModalMode('save')}
+        onLoad={() => setModalMode('load')}
+        onRestart={() => toggleRestartModal(true)}
+      />
+
       {/* ── Transition Overlay ───────────────────────────────── */}
       <div
-        className="absolute inset-0 bg-black z-40 pointer-events-none transition-opacity duration-[600ms]"
+        className="vn-transition-overlay absolute inset-0 bg-black z-40 pointer-events-none transition-opacity duration-[600ms]"
         style={{ opacity: fading ? 1 : 0 }}
       />
 
